@@ -51,8 +51,9 @@ public class GhostRenderer {
             if (!spawnedEntities.containsKey(ghost.getId())) {
                 com.mojang.authlib.GameProfile originalProfile = ghost.getProfile();
                 java.util.UUID newUuid = java.util.UUID.randomUUID();
-                com.mojang.authlib.GameProfile newProfile = new com.mojang.authlib.GameProfile(newUuid, originalProfile.name());
-                newProfile.properties().putAll(originalProfile.properties());
+                com.google.common.collect.Multimap<String, com.mojang.authlib.properties.Property> backingMap = com.google.common.collect.LinkedHashMultimap.create(originalProfile.properties());
+                com.mojang.authlib.properties.PropertyMap newProperties = new com.mojang.authlib.properties.PropertyMap(backingMap);
+                com.mojang.authlib.GameProfile newProfile = new com.mojang.authlib.GameProfile(newUuid, originalProfile.name(), newProperties);
 
                 GhostPlayerEntity entity = new GhostPlayerEntity(world, newProfile);
                 entity.setPos(ghost.getX(), ghost.getY(), ghost.getZ());

@@ -120,7 +120,7 @@ public class GhostData {
         JsonObject profObj = obj.getAsJsonObject("profile");
         UUID profUuid = UUID.fromString(profObj.get("uuid").getAsString());
         String name = profObj.get("name").getAsString();
-        GameProfile profile = new GameProfile(profUuid, name);
+        com.google.common.collect.Multimap<String, com.mojang.authlib.properties.Property> backingMap = com.google.common.collect.LinkedHashMultimap.create();
 
         if (profObj.has("properties")) {
             JsonArray propsArr = profObj.getAsJsonArray("properties");
@@ -130,12 +130,14 @@ public class GhostData {
                 String value = propObj.get("value").getAsString();
                 String signature = propObj.has("signature") ? propObj.get("signature").getAsString() : null;
                 if (signature != null) {
-                    profile.properties().put(propName, new Property(propName, value, signature));
+                    backingMap.put(propName, new Property(propName, value, signature));
                 } else {
-                    profile.properties().put(propName, new Property(propName, value));
+                    backingMap.put(propName, new Property(propName, value));
                 }
             }
         }
+        com.mojang.authlib.properties.PropertyMap properties = new com.mojang.authlib.properties.PropertyMap(backingMap);
+        GameProfile profile = new GameProfile(profUuid, name, properties);
 
         return new GhostData(id, x, y, z, yaw, pitch, dimension, profile, deathMessage);
     }
