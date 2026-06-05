@@ -1,20 +1,15 @@
 package com.pastdeathghost.mixin.client;
 
 import com.pastdeathghost.client.entity.GhostPlayerEntity;
-import com.pastdeathghost.client.render.GhostRenderCommandQueue;
 import com.pastdeathghost.client.render.GhostRenderState;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.command.OrderedRenderCommandQueue;
-import net.minecraft.client.render.command.RenderCommandQueue;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.client.render.state.CameraRenderState;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -24,14 +19,20 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     @Inject(method = "updateRenderState(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/entity/state/EntityRenderState;F)V", at = @At("TAIL"))
     private void past_death_ghost$updateGhostRenderState(T entity, S state, float tickDelta, CallbackInfo ci) {
         if (entity instanceof GhostPlayerEntity) {
+            // Override displayName so the nameplate shows the death message
             state.displayName = entity.getCustomName();
-            System.out.println("[PastDeathGhost] updateGhostRenderState: entity is GhostPlayerEntity. Custom Name: " + (state.displayName != null ? state.displayName.getString() : "null"));
-        }
-        if (state instanceof GhostRenderState ghostState) {
-            boolean isGhost = entity instanceof GhostPlayerEntity;
-            ghostState.past_death_ghost$setGhost(isGhost);
-            if (isGhost) {
-                System.out.println("[PastDeathGhost] updateGhostRenderState: setGhost(true) on state " + state.getClass().getSimpleName());
+
+            // Force invisible=true, invisibleToPlayer=false so vanilla's render()
+            // takes the "ghost path": bl=false, bl2=true.
+            // This causes RenderLayer=entityTranslucent and color=0x26FFFFFF (15% alpha).
+            // Our LivingEntityRendererMixin then overrides the texture to ghost.png.
+            state.invisible = true;
+            if (state instanceof LivingEntityRenderState livingState) {
+                livingState.invisibleToPlayer = false;
+            }
+            // Flag the state so LivingEntityRendererMixin can override the texture
+            if (state instanceof GhostRenderState ghostState) {
+                ghostState.past_death_ghost$setGhost(true);
             }
         }
     }
@@ -41,17 +42,5 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
         if (entity instanceof GhostPlayerEntity) {
             cir.setReturnValue(true);
         }
-    }
-
-    @ModifyVariable(
-        method = "render(Lnet/minecraft/client/render/entity/state/EntityRenderState;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/command/OrderedRenderCommandQueue;Lnet/minecraft/client/render/state/CameraRenderState;)V",
-        at = @At("HEAD"),
-        argsOnly = true
-    )
-    private OrderedRenderCommandQueue past_death_ghost$wrapQueue(OrderedRenderCommandQueue queue, EntityRenderState state) {
-        if (state instanceof GhostRenderState ghostState && ghostState.past_death_ghost$isGhost()) {
-            return new GhostRenderCommandQueue(queue, 80);
-        }
-        return queue;
     }
 }
