@@ -1,9 +1,11 @@
 {
 	"required": true,
-	"package": "com.example.mixin",
+	"package": "com.pastdeathghost.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"LivingEntityRendererMixin",
+		"EntityRenderStateMixin",
+		"EntityRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

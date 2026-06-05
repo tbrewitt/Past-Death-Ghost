@@ -14,22 +14,26 @@ repositories {
 	// for more information about repositories.
 }
 
-loom {
-	splitEnvironmentSourceSets()
-
-	mods {
-		"modid" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
+sourceSets {
+	main {
+		java {
+			srcDirs += 'src/client/java'
 		}
 	}
+}
 
+loom {
+	mods {
+		"past_death_ghost" {
+			sourceSet sourceSets.main
+		}
+	}
 }
 
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
+	mappings "net.fabricmc:yarn:1.21.11+build.1:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
@@ -85,3 +89,4 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+
