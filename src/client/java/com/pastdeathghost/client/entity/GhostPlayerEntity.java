@@ -5,10 +5,6 @@ import net.minecraft.client.world.ClientWorld;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.Entity;
 
-/**
- * A custom client-only player entity subclass.
- * Used to identify ghost player models and apply custom rendering (translucency).
- */
 public class GhostPlayerEntity extends OtherClientPlayerEntity {
     public GhostPlayerEntity(ClientWorld world, GameProfile profile) {
         super(world, profile);

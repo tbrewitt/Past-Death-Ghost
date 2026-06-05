@@ -17,16 +17,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Manages loading, saving, and enforcing bounds on the active list of ghosts.
- */
 public class GhostManager {
     private static final Logger LOGGER = LoggerFactory.getLogger("PastDeathGhost");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("past_death_ghost.json");
 
     private final List<GhostData> ghosts = new ArrayList<>();
-    private int maxGhosts = 10; // Default limit
+    private int maxGhosts = 10;
 
     private static final GhostManager INSTANCE = new GhostManager();
 
@@ -65,17 +62,14 @@ public class GhostManager {
 
     private void enforceLimit() {
         while (ghosts.size() > maxGhosts && !ghosts.isEmpty()) {
-            ghosts.remove(0); // Remove oldest
+            ghosts.remove(0);
         }
     }
 
-    /**
-     * Loads the config and ghost list from disk.
-     */
     public synchronized void load() {
         File file = CONFIG_PATH.toFile();
         if (!file.exists()) {
-            save(); // Create default config file
+            save();
             return;
         }
 
@@ -101,9 +95,6 @@ public class GhostManager {
         }
     }
 
-    /**
-     * Saves the current config and ghost list to disk.
-     */
     public synchronized void save() {
         JsonObject root = new JsonObject();
         root.addProperty("maxGhosts", maxGhosts);

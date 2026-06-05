@@ -24,18 +24,12 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     @Inject(method = "updateRenderState(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/entity/state/EntityRenderState;F)V", at = @At("TAIL"))
     private void past_death_ghost$updateGhostRenderState(T entity, S state, float tickDelta, CallbackInfo ci) {
         if (entity instanceof GhostPlayerEntity) {
-            // Override displayName so the nameplate shows the death message
             state.displayName = entity.getCustomName();
 
-            // Force invisible=true, invisibleToPlayer=false so vanilla's render()
-            // takes the "ghost path": bl=false, bl2=true.
-            // This causes RenderLayer=entityTranslucent and color=0x26FFFFFF (15% alpha).
-            // Our LivingEntityRendererMixin then overrides the texture to ghost.png.
             state.invisible = true;
             if (state instanceof LivingEntityRenderState livingState) {
                 livingState.invisibleToPlayer = false;
             }
-            // Flag the state so LivingEntityRendererMixin can override the texture
             if (state instanceof GhostRenderState ghostState) {
                 ghostState.past_death_ghost$setGhost(true);
             }

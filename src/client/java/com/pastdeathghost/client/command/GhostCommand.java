@@ -9,9 +9,6 @@ import net.minecraft.util.Formatting;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
-/**
- * Registers client-side command "/ghosts" for managing ghosts.
- */
 public class GhostCommand {
     public static void register() {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {

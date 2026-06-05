@@ -15,12 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extends LivingEntityRenderState> {
 
-    /**
-     * When the entity is flagged as a ghost (state.invisible=true, invisibleToPlayer=false),
-     * vanilla already passes translucent=true into getRenderLayer.
-     * We override here to swap the default player texture for our ghost.png,
-     * keeping the entityTranslucent layer so alpha blending works.
-     */
     @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
     private void past_death_ghost$useGhostTexture(
             S state, boolean showBody, boolean translucent, boolean showOutline,

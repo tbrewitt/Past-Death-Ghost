@@ -7,10 +7,6 @@ import com.mojang.authlib.properties.Property;
 
 import java.util.UUID;
 
-/**
- * Data class representing a recorded player death.
- * Stores the position, rotation, dimension, and player GameProfile for skin rendering.
- */
 public class GhostData {
     private final UUID id;
     private final double x;
@@ -70,9 +66,6 @@ public class GhostData {
         return profile;
     }
 
-    /**
-     * Converts the GhostData into a JsonObject for file persistence.
-     */
     public JsonObject toJson() {
         JsonObject obj = new JsonObject();
         obj.addProperty("id", id.toString());
@@ -104,9 +97,6 @@ public class GhostData {
         return obj;
     }
 
-    /**
-     * Reconstructs GhostData from a JsonObject.
-     */
     public static GhostData fromJson(JsonObject obj) {
         UUID id = UUID.fromString(obj.get("id").getAsString());
         double x = obj.get("x").getAsDouble();

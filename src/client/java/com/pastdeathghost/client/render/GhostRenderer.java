@@ -35,10 +35,8 @@ public class GhostRenderer {
 
         String currentDim = world.getRegistryKey().getValue().toString();
 
-        // 1. Spawn ghosts that are not yet spawned
         for (GhostData ghost : GhostManager.getInstance().getGhosts()) {
             if (!ghost.getDimension().equals(currentDim)) {
-                // If it is spawned but in the wrong dimension, discard it
                 if (spawnedEntities.containsKey(ghost.getId())) {
                     GhostPlayerEntity entity = spawnedEntities.remove(ghost.getId());
                     if (entity != null) {
@@ -66,25 +64,19 @@ public class GhostRenderer {
                 entity.lastHeadYaw = ghost.getYaw();
                 entity.lastBodyYaw = ghost.getYaw();
                 
-                // Show death message instead of name
                 entity.setCustomName(Text.literal(ghost.getDeathMessage()));
                 entity.setCustomNameVisible(true);
-                
-                // Disable collision/physics
+
                 entity.noClip = true;
-                
-                // Add to world client-side
+
                 world.addEntity(entity);
                 spawnedEntities.put(ghost.getId(), entity);
             } else {
-                // Keep it in place and check if it's still in the world
                 GhostPlayerEntity entity = spawnedEntities.get(ghost.getId());
                 if (entity != null) {
                     if (entity.isRemoved() || world.getEntityById(entity.getId()) == null) {
-                        // Evict from cache so a new entity gets spawned next tick
                         spawnedEntities.remove(ghost.getId());
                     } else {
-                        // Lock position, rotation, and velocity
                         entity.setPos(ghost.getX(), ghost.getY(), ghost.getZ());
                         entity.setYaw(ghost.getYaw());
                         entity.setPitch(ghost.getPitch());
@@ -98,7 +90,6 @@ public class GhostRenderer {
             }
         }
 
-        // 2. Remove ghosts that no longer exist in GhostManager
         spawnedEntities.entrySet().removeIf(entry -> {
             UUID id = entry.getKey();
             GhostPlayerEntity entity = entry.getValue();
