@@ -24,6 +24,13 @@ public class DeathDetector {
         float pitch = player.getPitch();
         String dimension = world.getRegistryKey().getValue().toString();
 
+        // Format the death message: replace player name with "you" (case-insensitive)
+        String formattedMsg = deathMsg;
+        String playerName = player.getGameProfile().name();
+        if (playerName != null && !playerName.isEmpty()) {
+            formattedMsg = deathMsg.replaceAll("(?i)" + java.util.regex.Pattern.quote(playerName), "you");
+        }
+
         // Create and record ghost data
         GhostData ghost = new GhostData(
                 UUID.randomUUID(),
@@ -34,7 +41,7 @@ public class DeathDetector {
                 pitch,
                 dimension,
                 player.getGameProfile(),
-                deathMsg
+                formattedMsg
         );
 
         GhostManager.getInstance().addGhost(ghost);
