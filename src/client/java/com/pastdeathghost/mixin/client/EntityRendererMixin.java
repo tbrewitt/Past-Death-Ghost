@@ -25,9 +25,14 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     private void past_death_ghost$updateGhostRenderState(T entity, S state, float tickDelta, CallbackInfo ci) {
         if (entity instanceof GhostPlayerEntity) {
             state.displayName = entity.getCustomName();
+            System.out.println("[PastDeathGhost] updateGhostRenderState: entity is GhostPlayerEntity. Custom Name: " + (state.displayName != null ? state.displayName.getString() : "null"));
         }
         if (state instanceof GhostRenderState ghostState) {
-            ghostState.past_death_ghost$setGhost(entity instanceof GhostPlayerEntity);
+            boolean isGhost = entity instanceof GhostPlayerEntity;
+            ghostState.past_death_ghost$setGhost(isGhost);
+            if (isGhost) {
+                System.out.println("[PastDeathGhost] updateGhostRenderState: setGhost(true) on state " + state.getClass().getSimpleName());
+            }
         }
     }
 
