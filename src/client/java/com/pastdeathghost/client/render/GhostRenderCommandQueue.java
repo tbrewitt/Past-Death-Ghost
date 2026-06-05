@@ -26,9 +26,10 @@ public class GhostRenderCommandQueue implements OrderedRenderCommandQueue {
     }
 
     private int adjustColor(int color) {
-        int originalAlpha = (color >> 24) & 0xFF;
-        int targetAlpha = (originalAlpha * alpha) / 255;
-        return (color & 0x00FFFFFF) | (targetAlpha << 24);
+        // Set target transparency using the configured alpha (120 / 255)
+        int targetAlpha = this.alpha;
+        // Tint the texture with a spectral cyan-blue color (R=160, G=220, B=255)
+        return (targetAlpha << 24) | (160 << 16) | (220 << 8) | 255;
     }
 
     @Override

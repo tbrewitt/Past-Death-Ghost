@@ -5,7 +5,8 @@
 	"mixins": [
 		"LivingEntityRendererMixin",
 		"EntityRenderStateMixin",
-		"EntityRendererMixin"
+		"EntityRendererMixin",
+		"ClientPlayNetworkHandlerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
