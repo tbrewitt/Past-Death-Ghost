@@ -15,8 +15,13 @@ public class ClientPlayNetworkHandlerMixin {
     @Inject(method = "onDeathMessage", at = @At("TAIL"))
     private void past_death_ghost$onDeathMessage(DeathMessageS2CPacket packet, CallbackInfo ci) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null && packet.playerId() == client.player.getId()) {
-            DeathDetector.onPlayerDeath(client.player, packet.message().getString());
+        if (client.player != null) {
+            System.out.println("[PastDeathGhost] Received death packet. Target entity ID: " + packet.playerId() + ", local player entity ID: " + client.player.getId());
+            if (packet.playerId() == client.player.getId()) {
+                String deathMsg = packet.message().getString();
+                System.out.println("[PastDeathGhost] Processing local player death. Message: \"" + deathMsg + "\"");
+                DeathDetector.onPlayerDeath(client.player, deathMsg);
+            }
         }
     }
 }

@@ -23,6 +23,9 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 
     @Inject(method = "updateRenderState(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/render/entity/state/EntityRenderState;F)V", at = @At("TAIL"))
     private void past_death_ghost$updateGhostRenderState(T entity, S state, float tickDelta, CallbackInfo ci) {
+        if (entity instanceof GhostPlayerEntity) {
+            state.displayName = entity.getCustomName();
+        }
         if (state instanceof GhostRenderState ghostState) {
             ghostState.past_death_ghost$setGhost(entity instanceof GhostPlayerEntity);
         }

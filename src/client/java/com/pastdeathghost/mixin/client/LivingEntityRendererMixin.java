@@ -30,11 +30,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
     @Inject(method = "getRenderLayer", at = @At("RETURN"), cancellable = true)
     private void past_death_ghost$makeGhostsTranslucent(S state, boolean showBody, boolean translucent, boolean showOutline, CallbackInfoReturnable<RenderLayer> cir) {
         if (state instanceof GhostRenderState ghostState && ghostState.past_death_ghost$isGhost()) {
-            Identifier texture = getTexture(state);
-            if (texture != null) {
-                // Return translucent emissive render layer for the ghost (so it glows)
-                cir.setReturnValue(RenderLayers.entityTranslucentEmissive(texture));
-            }
+            Identifier texture = Identifier.of("past_death_ghost", "textures/entity/ghost.png");
+            cir.setReturnValue(RenderLayers.entityTranslucentEmissive(texture));
         }
     }
 
