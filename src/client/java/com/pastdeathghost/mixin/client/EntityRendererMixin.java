@@ -45,7 +45,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
     )
     private OrderedRenderCommandQueue past_death_ghost$wrapQueue(OrderedRenderCommandQueue queue, EntityRenderState state) {
         if (state instanceof GhostRenderState ghostState && ghostState.past_death_ghost$isGhost()) {
-            return new GhostRenderCommandQueue(queue, 120);
+            return new GhostRenderCommandQueue(queue, 80);
         }
         return queue;
     }
