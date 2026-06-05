@@ -3,13 +3,13 @@
 	"id": "past_death_ghost",
 	"version": "${version}",
 	"name": "Past Death Ghost",
-	"description": "Client-side mod that renders a translucent, glowing ghost at your death locations.",
+	"description": "Client-side mod that leaves a translucent ghost and death message at your last death location.",
 	"authors": [
 		"Titanitus"
 	],
 	"contact": {
-		"homepage": "https://github.com/",
-		"sources": "https://github.com/"
+		"homepage": "https://github.com/tbrewitt/Past-Death-Ghost",
+		"sources": "https://github.com/tbrewitt/Past-Death-Ghost"
 	},
 	"license": "MIT",
 	"icon": "assets/past_death_ghost/icon.png",
@@ -24,7 +24,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.19.2",
-		"minecraft": ">=1.21.1",
+		"minecraft": "1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"
 	}
