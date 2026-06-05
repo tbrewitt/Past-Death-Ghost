@@ -6,6 +6,7 @@
 		"LivingEntityRendererMixin",
 		"EntityRenderStateMixin",
 		"EntityRendererMixin",
+		"PlayerEntityRendererMixin",
 		"ClientPlayNetworkHandlerMixin"
 	],
 	"injectors": {
