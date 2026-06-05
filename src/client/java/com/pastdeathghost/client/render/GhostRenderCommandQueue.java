@@ -1,7 +1,10 @@
 package com.pastdeathghost.client.render;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.command.ModelCommandRenderer;
 import net.minecraft.client.render.command.OrderedRenderCommandQueue;
@@ -31,6 +34,10 @@ public class GhostRenderCommandQueue implements OrderedRenderCommandQueue {
         return (color & 0x00FFFFFF) | (targetAlpha << 24);
     }
 
+    private int withAlpha(int color) {
+        return (color & 0x00FFFFFF) | (alpha << 24);
+    }
+
     @Override
     public RenderCommandQueue getBatchingQueue(int i) {
         RenderCommandQueue queue = delegate.getBatchingQueue(i);
@@ -47,12 +54,33 @@ public class GhostRenderCommandQueue implements OrderedRenderCommandQueue {
 
     @Override
     public void submitLabel(MatrixStack matrixStack, Vec3d vec3d, int i, Text text, boolean b, int j, double d, CameraRenderState cameraRenderState) {
-        delegate.submitLabel(matrixStack, vec3d, i, text, b, j, d, cameraRenderState);
+        if (vec3d == null) {
+            return;
+        }
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        TextRenderer textRenderer = client.textRenderer;
+        matrixStack.push();
+        matrixStack.translate(vec3d.x, vec3d.y + 0.5, vec3d.z);
+        matrixStack.multiply(cameraRenderState.orientation);
+        matrixStack.scale(0.025F, -0.025F, 0.025F);
+
+        float x = -textRenderer.getWidth(text) / 2.0F;
+        int backgroundColor = ((int)(client.options.getTextBackgroundOpacity(0.25F) * alpha) << 24);
+        OrderedText orderedText = text.asOrderedText();
+        if (b) {
+            delegate.submitText(matrixStack, x, i, orderedText, false, TextRenderer.TextLayerType.NORMAL, LightmapTextureManager.applyEmission(j, 2), withAlpha(0x00FFFFFF), 0, 0);
+            delegate.submitText(matrixStack, x, i, orderedText, false, TextRenderer.TextLayerType.SEE_THROUGH, j, withAlpha(0x80FFFFFF), backgroundColor, 0);
+        } else {
+            delegate.submitText(matrixStack, x, i, orderedText, false, TextRenderer.TextLayerType.NORMAL, j, withAlpha(0x80FFFFFF), backgroundColor, 0);
+        }
+
+        matrixStack.pop();
     }
 
     @Override
     public void submitText(MatrixStack matrixStack, float f, float g, OrderedText orderedText, boolean b, net.minecraft.client.font.TextRenderer.TextLayerType textLayerType, int i, int j, int k, int l) {
-        delegate.submitText(matrixStack, f, g, orderedText, b, textLayerType, i, j, k, l);
+        delegate.submitText(matrixStack, f, g, orderedText, b, textLayerType, i, adjustColor(j), adjustColor(k), adjustColor(l));
     }
 
     @Override
@@ -67,12 +95,12 @@ public class GhostRenderCommandQueue implements OrderedRenderCommandQueue {
 
     @Override
     public <S> void submitModel(Model<? super S> model, S state, MatrixStack matrices, RenderLayer layer, int color, int overlay, int light, net.minecraft.client.texture.Sprite sprite, int c, ModelCommandRenderer.CrumblingOverlayCommand o) {
-        delegate.submitModel(model, state, matrices, layer, adjustColor(color), overlay, light, sprite, c, o);
+        delegate.submitModel(model, state, matrices, layer, color, overlay, light, sprite, c, o);
     }
 
     @Override
     public void submitModelPart(ModelPart modelPart, MatrixStack matrixStack, RenderLayer renderLayer, int i, int j, net.minecraft.client.texture.Sprite sprite, boolean b, boolean c, int k, ModelCommandRenderer.CrumblingOverlayCommand o, int l) {
-        delegate.submitModelPart(modelPart, matrixStack, renderLayer, adjustColor(i), j, sprite, b, c, k, o, l);
+        delegate.submitModelPart(modelPart, matrixStack, renderLayer, i, j, sprite, b, c, k, o, l);
     }
 
     @Override
