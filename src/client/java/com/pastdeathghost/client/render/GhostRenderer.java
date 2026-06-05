@@ -49,7 +49,12 @@ public class GhostRenderer {
             }
 
             if (!spawnedEntities.containsKey(ghost.getId())) {
-                GhostPlayerEntity entity = new GhostPlayerEntity(world, ghost.getProfile());
+                com.mojang.authlib.GameProfile originalProfile = ghost.getProfile();
+                java.util.UUID newUuid = java.util.UUID.randomUUID();
+                com.mojang.authlib.GameProfile newProfile = new com.mojang.authlib.GameProfile(newUuid, originalProfile.name());
+                newProfile.properties().putAll(originalProfile.properties());
+
+                GhostPlayerEntity entity = new GhostPlayerEntity(world, newProfile);
                 entity.setPos(ghost.getX(), ghost.getY(), ghost.getZ());
                 entity.setYaw(ghost.getYaw());
                 entity.setPitch(ghost.getPitch());
@@ -73,9 +78,21 @@ public class GhostRenderer {
             } else {
                 // Keep it in place and check if it's still in the world
                 GhostPlayerEntity entity = spawnedEntities.get(ghost.getId());
-                if (entity != null && (entity.isRemoved() || world.getEntityById(entity.getId()) == null)) {
-                    // Evict from cache so a new entity gets spawned next tick
-                    spawnedEntities.remove(ghost.getId());
+                if (entity != null) {
+                    if (entity.isRemoved() || world.getEntityById(entity.getId()) == null) {
+                        // Evict from cache so a new entity gets spawned next tick
+                        spawnedEntities.remove(ghost.getId());
+                    } else {
+                        // Lock position, rotation, and velocity
+                        entity.setPos(ghost.getX(), ghost.getY(), ghost.getZ());
+                        entity.setYaw(ghost.getYaw());
+                        entity.setPitch(ghost.getPitch());
+                        entity.setHeadYaw(ghost.getYaw());
+                        entity.setBodyYaw(ghost.getYaw());
+                        entity.setVelocity(0, 0, 0);
+                        entity.noClip = true;
+                        entity.setNoGravity(true);
+                    }
                 }
             }
         }
